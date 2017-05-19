@@ -8,6 +8,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="myScreen"  parent="AppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowActionBar">false</item>
+    </style>
+
+
     <style name="myStyle" >
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>

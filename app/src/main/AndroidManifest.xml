@@ -19,7 +19,11 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"></activity>
+            android:launchMode="singleTask"/>
+        <activity android:name=".acticity.SystemVideoPlayerActivity"
+            android:theme="@style/myScreen"
+
+            ></activity>
     </application>
 
 </manifest>

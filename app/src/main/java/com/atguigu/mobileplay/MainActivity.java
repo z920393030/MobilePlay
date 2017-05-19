@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                     position  = 3;
                     break;
             }
-            BaseFragment currentFragment = fragments.get(position);//要显示的Fragment
+            BaseFragment currentFragment = fragments.get(position);
             addFragment(currentFragment);
         }
     }
