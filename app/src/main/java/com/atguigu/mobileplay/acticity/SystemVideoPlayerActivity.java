@@ -21,9 +21,11 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.atguigu.mobileplay.R;
+import com.atguigu.mobileplay.domain.MediaItem;
 import com.atguigu.mobileplay.utils.Utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -34,6 +36,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
     private VideoView vv;
     private Uri uri;
     private static final int PROGRESS = 0;
+    private ArrayList<MediaItem> mediaItems;;
 
     private LinearLayout llTop;
     private TextView tvName;
@@ -53,6 +56,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
     private Button btnSwitchScreen;
     private Utils utils;
     private MyBroadCastReceiver receiver;
+    private int position;
 
     /**
      * Find the Views in the layout<br />
@@ -94,16 +98,37 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        findViews();
         initData();
 
-        uri = getIntent().getData();
+        findViews();
+        getData();
 
         setListener();
-
-        vv.setVideoURI(uri);
+        setData();
 
     }
+
+    private void setData() {
+        if(mediaItems != null && mediaItems.size() >0){
+
+            MediaItem mediaItem = mediaItems.get(position);
+            tvName.setText(mediaItem.getName());
+            vv.setVideoPath(mediaItem.getData());
+
+        }else if(uri != null){
+            vv.setVideoURI(uri);
+        }
+
+        setButtonStatus();
+
+    }
+
+    private void getData() {
+        uri = getIntent().getData();
+        mediaItems  = (ArrayList<MediaItem>) getIntent().getSerializableExtra("videolist");
+        position = getIntent().getIntExtra("position",0);
+    }
+
     private void setListener() {
         vv.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -131,8 +156,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         vv.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                Toast.makeText(SystemVideoPlayerActivity.this, "视频播放完成", Toast.LENGTH_SHORT).show();
-                finish();
+                setNextVideo();
             }
         });
 
@@ -164,9 +188,9 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         } else if ( v == btnSwitchPlayer ) {
 
         } else if ( v == btnExit ) {
-
+            finish();
         } else if ( v == btnPre ) {
-
+            setPreVideo();
         } else if ( v == btnStartPause ) {
             if(vv.isPlaying()){
                 vv.pause();
@@ -176,11 +200,65 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                 btnStartPause.setBackgroundResource(R.drawable.btn_pause_selector);
             }
         } else if ( v == btnNext ) {
-
+            setNextVideo();
         } else if ( v == btnSwitchScreen ) {
-
+            setButtonStatus();
         }
     }
+
+    private void setButtonStatus() {
+        if(mediaItems != null && mediaItems.size() >0){
+            setEnable(true);
+
+            if(position ==0){
+                btnPre.setBackgroundResource(R.drawable.btn_pre_gray);
+                btnPre.setEnabled(false);
+            }
+
+            if(position ==mediaItems.size()-1){
+                btnNext.setBackgroundResource(R.drawable.btn_next_gray);
+                btnNext.setEnabled(false);
+            }
+
+        }else if(uri != null){
+            setEnable(false);
+        }
+    }
+
+    private void setEnable(boolean b) {
+        if( b){
+            btnPre.setBackgroundResource(R.drawable.btn_pre_selector);
+            btnNext.setBackgroundResource(R.drawable.btn_next_selector);
+        }else {
+            btnPre.setBackgroundResource(R.drawable.btn_pre_gray);
+            btnNext.setBackgroundResource(R.drawable.btn_next_gray);
+        }
+        btnPre.setEnabled(b);
+        btnNext.setEnabled(b);
+    }
+
+    private void setNextVideo() {
+        position++;
+        if(position < mediaItems.size()){
+            MediaItem mediaItem = mediaItems.get(position);
+            vv.setVideoPath(mediaItem.getData());
+            tvName.setText(mediaItem.getName());
+            setButtonStatus();
+        }else {
+            finish();
+        }
+    }
+
+    private void setPreVideo() {
+        position--;
+        if(position < mediaItems.size()){
+            MediaItem mediaItem = mediaItems.get(position);
+            vv.setVideoPath(mediaItem.getData());
+            tvName.setText(mediaItem.getName());
+            setButtonStatus();
+        }
+    }
+
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
