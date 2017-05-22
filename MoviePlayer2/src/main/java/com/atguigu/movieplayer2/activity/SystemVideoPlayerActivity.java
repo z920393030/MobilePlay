@@ -576,14 +576,16 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
 
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
             currentVoice--;
+            showMediaController();
             updateVoiceProgress(currentVoice);
-            handler.removeMessages( HIDE_MEDIACONTROLLER);
+            handler.removeMessages(HIDE_MEDIACONTROLLER);
             handler.sendEmptyMessageDelayed( HIDE_MEDIACONTROLLER, 5000);
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             currentVoice++;
+            showMediaController();
             updateVoiceProgress (currentVoice);
-            handler.removeMessages( HIDE_MEDIACONTROLLER);
+            handler.removeMessages(HIDE_MEDIACONTROLLER);
             handler.sendEmptyMessageDelayed( HIDE_MEDIACONTROLLER, 5000);
 
             return true;
@@ -591,6 +593,5 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         return super.onKeyDown(keyCode, event);
 
     }
-
 
 }
